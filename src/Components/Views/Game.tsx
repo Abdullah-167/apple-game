@@ -5,6 +5,7 @@ import appleImage from '../../../public/apple.png';
 interface Apple {
     x: number;
     y: number;
+    clicked: boolean;
     transitionDuration?: string;
 }
 
@@ -40,7 +41,7 @@ const Game: React.FC = () => {
         const fallAnimation = requestAnimationFrame(fallApples);
 
         const appleSpawnInterval = setInterval(() => {
-            setApples((prevApples) => [
+            setApples((prevApples): any => [
                 ...prevApples,
                 {
                     x: Math.random() * window.innerWidth,
@@ -61,11 +62,23 @@ const Game: React.FC = () => {
 
         const popSound = document.getElementById('popSound') as HTMLAudioElement | null;
         popSound?.play();
+
+        setApples((prevApples) =>
+            prevApples.map((apple, i) => {
+                if (i === index) {
+                    return {
+                        ...apple,
+                        clicked: true,
+                    };
+                }
+                return apple;
+            })
+        );
     };
 
     const resetGame = () => {
         setScore(0);
-        setClickedApples([]); // Reset clicked apples
+        setClickedApples([]);
     };
 
     return (
@@ -73,19 +86,21 @@ const Game: React.FC = () => {
             <div className='bg-image' style={{ maxHeight: '80vh', overflow: 'hidden' }}>
                 <div className='max-w-[1300px] mx-auto relative'>
                     {apples.map((apple, index) => (
-                        <div
-                            key={index}
-                            className={`absolute `}
-                            style={{
-                                top: apple.y,
-                                left: apple.x,
-                                cursor: 'pointer',
-                                transitionDuration: apple.transitionDuration || '',
-                            }}
-                            onClick={() => handleAppleClick(index)}
-                        >
-                            <Image src={appleImage} alt='Apple' width={50} height={50} />
-                        </div>
+                        !apple.clicked && (
+                            <div
+                                key={index}
+                                className={`absolute `}
+                                style={{
+                                    top: apple.y,
+                                    left: apple.x,
+                                    cursor: 'pointer',
+                                    transitionDuration: apple.transitionDuration || '',
+                                }}
+                                onClick={() => handleAppleClick(index)}
+                            >
+                                <Image src={appleImage} alt='Apple' width={50} height={50} />
+                            </div>
+                        )
                     ))}
                     <audio id='popSound' src='/pop.wav'></audio>
                     <p className='text-3xl py-5 text-center font-semibold'>Pick The Apple</p>
