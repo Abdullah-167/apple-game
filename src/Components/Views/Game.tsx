@@ -13,7 +13,7 @@ const Game: React.FC = () => {
     const [score, setScore] = useState<number>(0);
     const [clickedApples, setClickedApples] = useState<number[]>([]);
 
-    const fallInterval = 1000;
+    const fallInterval = 1500;
     const transitionDuration = '3s';
 
     useEffect(() => {
