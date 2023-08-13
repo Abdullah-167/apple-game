@@ -7,12 +7,14 @@ interface Apple {
     y: number;
     clicked: boolean;
     transitionDuration?: string;
+    bounce?: boolean; // New property for bounce animation
 }
 
 const Game: React.FC = () => {
     const [apples, setApples] = useState<Apple[]>([]);
     const [score, setScore] = useState<number>(0);
     const [clickedApples, setClickedApples] = useState<number[]>([]);
+    const [bounceAnimations, setBounceAnimations] = useState<boolean[]>([]);
 
     const fallInterval = 1500;
     const transitionDuration = '3s';
@@ -23,12 +25,19 @@ const Game: React.FC = () => {
                 prevApples.map((apple, index) => {
                     const isClicked = clickedApples.includes(index);
 
-                    if (!isClicked && apple.y + 5 <= window.innerHeight * 0.72) {
+                    if (!isClicked && apple.y + 5 <= window.innerHeight * 0.73) {
                         return {
                             ...apple,
                             y: apple.y + 5,
                             transitionDuration: transitionDuration,
                         };
+                    } else if (apple.y < window.innerHeight * 0.73) {
+                        setBounceAnimations((prevAnimations) => {
+                            const newAnimations = [...prevAnimations];
+                            newAnimations[index] = true;
+                            return newAnimations;
+                        });
+                        return apple;
                     }
 
                     return apple;
@@ -84,17 +93,18 @@ const Game: React.FC = () => {
     return (
         <div>
             <div className='bg-image' style={{ maxHeight: '80vh', overflow: 'hidden' }}>
-                <div className='max-w-[1300px] mx-auto relative'>
+                <div className='max-w-[1300px] mx-auto '>
                     {apples.map((apple, index) => (
                         !apple.clicked && (
                             <div
                                 key={index}
-                                className={`absolute `}
+                                className={`absolute`}
                                 style={{
                                     top: apple.y,
                                     left: apple.x,
                                     cursor: 'pointer',
                                     transitionDuration: apple.transitionDuration || '',
+                                    animation: bounceAnimations[index] ? 'bounce 4s 1 alternate' : 'none',
                                 }}
                                 onClick={() => handleAppleClick(index)}
                             >
@@ -106,9 +116,9 @@ const Game: React.FC = () => {
                     <p className='text-3xl py-5 text-center font-semibold'>Pick The Apple</p>
                 </div>
             </div>
-            <div className='bg-[#008000] w-full relative text-white h-[20vh] px-7 py-2'>
-                <div className='text-2xl font-semibold pb-5'>Score: {score}</div>
-                <button className='bg-[#ABEA38] px-5 py-2 animate-bounce' onClick={resetGame}>
+            <div className='bg-[#008000] w-full  text-white h-[20vh] px-7 py-2'>
+                <div className='text-2xl font-semibold pb-3'>Score: {score}</div>
+                <button className='bg-[#ABEA38] px-5 py-2 rounded-lg' onClick={resetGame}>
                     Reset
                 </button>
             </div>
