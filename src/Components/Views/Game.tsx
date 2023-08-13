@@ -12,21 +12,24 @@ const Game: React.FC = () => {
     const [apples, setApples] = useState<Apple[]>([]);
     const [score, setScore] = useState<number>(0);
     const [clickedApples, setClickedApples] = useState<number[]>([]);
-    
+
     const fallInterval = 1000;
     const transitionDuration = '3s';
 
     useEffect(() => {
         const fallApples = () => {
             setApples((prevApples) =>
-                prevApples.map((apple) => {
-                    if (apple.y + 5 <= window.innerHeight * 0.72) {
+                prevApples.map((apple, index) => {
+                    const isClicked = clickedApples.includes(index);
+
+                    if (!isClicked && apple.y + 5 <= window.innerHeight * 0.72) {
                         return {
                             ...apple,
                             y: apple.y + 5,
                             transitionDuration: transitionDuration,
                         };
                     }
+
                     return apple;
                 })
             );
@@ -50,15 +53,11 @@ const Game: React.FC = () => {
             cancelAnimationFrame(fallAnimation);
             clearInterval(appleSpawnInterval);
         };
-    }, []);
+    }, [clickedApples]);
 
     const handleAppleClick = (index: number) => {
-        setApples((prevApples) => {
-            const newApples = [...prevApples];
-            newApples.splice(index, 1);
-            setScore(score + 1);
-            return newApples;
-        });
+        setClickedApples((prevClickedApples) => [...prevClickedApples, index]);
+        setScore(score + 1);
 
         const popSound = document.getElementById('popSound') as HTMLAudioElement | null;
         popSound?.play();
@@ -66,6 +65,7 @@ const Game: React.FC = () => {
 
     const resetGame = () => {
         setScore(0);
+        setClickedApples([]); // Reset clicked apples
     };
 
     return (
