@@ -21,17 +21,20 @@ const Game: React.FC = () => {
 
     useEffect(() => {
         const fallApples = () => {
+
+            const screenThreshold = window.innerWidth < 768 ? 0.76 : 0.73;
+
             setApples((prevApples) =>
                 prevApples.map((apple, index) => {
                     const isClicked = clickedApples.includes(index);
 
-                    if (!isClicked && apple.y + 5 <= window.innerHeight * 0.73) {
+                    if (!isClicked && apple.y + 5 <= window.innerHeight * screenThreshold) {
                         return {
                             ...apple,
                             y: apple.y + 5,
                             transitionDuration: transitionDuration,
                         };
-                    } else if (apple.y < window.innerHeight * 0.73) {
+                    } else if (apple.y < window.innerHeight * screenThreshold) {
                         setBounceAnimations((prevAnimations) => {
                             const newAnimations = [...prevAnimations];
                             newAnimations[index] = true;
@@ -116,7 +119,7 @@ const Game: React.FC = () => {
                     <p className='text-3xl py-5 text-center font-semibold'>Pick The Apple</p>
                 </div>
             </div>
-            <div className='bg-[#008000] w-full  text-white h-[20vh] px-7 py-2'>
+            <div className='bg-[#008000] w-full  text-white h-[20vh] px-7 py-9 sm:py-2'>
                 <div className='text-2xl font-semibold pb-3'>Score: {score}</div>
                 <button className='bg-[#ABEA38] px-5 py-2 rounded-lg' onClick={resetGame}>
                     Reset
